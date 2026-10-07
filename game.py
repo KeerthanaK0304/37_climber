@@ -9,6 +9,7 @@ PLAYER_W, PLAYER_H = 36, 36
 PLATFORM_H = 14
 COIN_R = 7
 LIVES_START = 3
+sparkles = [] #For task 4
 
 
 def platform_color(index, total):
@@ -25,14 +26,26 @@ def platform_color(index, total):
 
 def moving_platform_speed(index, total):
     """Return a horizontal oscillation speed in pixels/frame for the platform at this index, or None/0 to keep it static."""
+    #Implementing Task 4 to move random platforms. Here every 3rd platform moves
     if index % 3 == 0:
         return 1.5
     return 0
 
 def on_coin_collected(coin, score):
-    """Called the instant the player collects a coin, after its value has been added to the score. Add a sound or sparkle here."""
-    pass
+    """Create a short sparkle effect at the collected coin's position."""
+    #Implementing task 4 to give a visual sparkle as the player collects the coin
+    for _ in range(8):
+        angle = random.uniform(0, 6.28)
+        speed = random.uniform(1.5, 3.0)
 
+        sparkles.append({
+            "pos": pygame.Vector2(coin.pos),
+            "vel": pygame.Vector2(
+                random.uniform(-speed, speed),
+                random.uniform(-speed, speed)
+            ),
+            "life": 20
+        })
 
 class Platform:
     def __init__(self, index, total, x, y, w=120, movable=True):
@@ -170,8 +183,16 @@ class Game:
             if not coin.taken and self.player.rect.collidepoint(coin.pos):
                 coin.taken = True
                 self.coin_score += 50
-                on_coin_collected(coin, self.score())
+                on_coin_collected(coin, self.score()) #Calling sparkle function while updating score
+
         self.coins = [c for c in self.coins if not c.taken]
+
+        for sparkle in sparkles[:]:
+            sparkle["pos"] += sparkle["vel"]
+            sparkle["life"] -= 1
+
+            if sparkle["life"] <= 0:
+                sparkles.remove(sparkle)
 
         if self.player.rect.top - self.cam_y > HEIGHT + 50:
             self.lives -= 1
@@ -190,7 +211,14 @@ class Game:
             plat.draw(screen, self.cam_y)
         for coin in self.coins:
             coin.draw(screen, self.cam_y)
-        self.player.draw(screen, self.cam_y)
+
+        for sparkle in sparkles:
+            x = int(sparkle["pos"].x)
+            y = int(sparkle["pos"].y - self.cam_y)
+            radius = max(1, sparkle["life"] // 5)
+            pygame.draw.circle(screen, (255, 240, 120), (x, y), radius)
+
+        self.player.draw(screen, self.cam_y)           
 
         hud = self.font.render(f"Height: {self.height}m  Coins: {self.coin_score // 50}  Lives: {self.lives}", True, (200, 200, 200))
         screen.blit(hud, (10, 10))
