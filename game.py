@@ -13,6 +13,7 @@ LIVES_START = 3
 
 def platform_color(index, total):
     """Return an (r, g, b) colour override for the platform at this index (0 is the ground), or None for the default green."""
+    self.color = platform_color(index, total) or (100, 180, 100) #Implementing task 2
     pass
 
 
@@ -153,7 +154,7 @@ class Game:
             self.cam_y = target_cam
 
         current_height = max(0, (HEIGHT - 40 - self.player.rect.y) // 10)
-        self.height = current_height
+        self.height = max(self.height, current_height) #Resolving issue 1 of non-decreasing heights when the player falls down
 
         if self.player.on_ground:
             self.last_safe = pygame.Vector2(self.player.rect.x, self.player.rect.y)
