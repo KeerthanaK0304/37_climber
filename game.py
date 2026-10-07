@@ -13,9 +13,17 @@ LIVES_START = 3
 
 def platform_color(index, total):
     """Return an (r, g, b) colour override for the platform at this index (0 is the ground), or None for the default green."""
-    self.color = platform_color(index, total) or (100, 180, 100) #Implementing task 2
-    pass
+    #Implementing task 2
+    if index == 0:
+        return None
 
+    progress = index / max(1, total)
+
+    r = int(100 + 100 * progress)
+    g = int(180 - 60 * progress)
+    b = int(100 + 100 * progress)
+
+    return (r, g, b)
 
 def moving_platform_speed(index, total):
     """Return a horizontal oscillation speed in pixels/frame for the platform at this index, or None/0 to keep it static."""
