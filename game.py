@@ -13,22 +13,21 @@ LIVES_START = 3
 
 def platform_color(index, total):
     """Return an (r, g, b) colour override for the platform at this index (0 is the ground), or None for the default green."""
-    #Implementing task 2
+    #Implementing task 2 to change colour according to the total height or Green at start
     if index == 0:
         return None
 
     progress = index / max(1, total)
-
     r = int(100 + 100 * progress)
     g = int(180 - 60 * progress)
     b = int(100 + 100 * progress)
-
     return (r, g, b)
 
 def moving_platform_speed(index, total):
     """Return a horizontal oscillation speed in pixels/frame for the platform at this index, or None/0 to keep it static."""
-    pass
-
+    if index % 3 == 0:
+        return 1.5
+    return 0
 
 def on_coin_collected(coin, score):
     """Called the instant the player collects a coin, after its value has been added to the score. Add a sound or sparkle here."""
